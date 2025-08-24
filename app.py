@@ -1,17 +1,20 @@
-from flask import Flask
+from flask import Flask, render_template
 import os
 
 app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return 'Hola, esta es la página principal!'
+    return render_template('index.html')
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
 
 @app.route('/usuario/<nombre>')
 def usuario(nombre):
     return f'Bienvenido, {nombre}!'
 
-
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))
+    port = int(os.environ.get("PORT", 5000))  # Mantener para Render
     app.run(host='0.0.0.0', port=port, debug=True)
