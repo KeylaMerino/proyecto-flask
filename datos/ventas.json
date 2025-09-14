@@ -8,5 +8,10 @@
         "producto": "helado de vainilla",
         "cantidad": 2,
         "precio": 3.0
+    },
+    {
+        "producto": "helado de queso",
+        "cantidad": 1,
+        "precio": 3.5
     }
 ]
