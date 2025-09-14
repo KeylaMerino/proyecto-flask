@@ -1,122 +1,124 @@
-from flask import Flask, render_template, request
-import os, json, csv
+from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
+import csv
+import json
+import os
 
 app = Flask(__name__)
 
-# RUTAS EXISTENTES
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-@app.route('/about')
-def about():
-    return render_template('about.html')
-
-@app.route('/usuario/<nombre>')
-def usuario(nombre):
-    return f'Bienvenido, {nombre}!'
-
-
-# PERSISTENCIA DE DATOS
-DATA_DIR = "datos"
-if not os.path.exists(DATA_DIR):
-    os.makedirs(DATA_DIR)
-
-TXT_FILE = os.path.join(DATA_DIR, "datos.txt")
-JSON_FILE = os.path.join(DATA_DIR, "datos.json")
-CSV_FILE = os.path.join(DATA_DIR, "datos.csv")
-
-# Formulario
-@app.route('/formulario')
-def formulario():
-    return render_template('formulario.html')
-
-# Guardar datos en archivos
-@app.route('/guardar', methods=['POST'])
-def guardar():
-    nombre = request.form['nombre']
-    edad = request.form['edad']
-
-    # Guardar en TXT
-    with open(TXT_FILE, "a", encoding="utf-8") as f:
-        f.write(f"{nombre},{edad}\n")
-
-    # Guardar en JSON
-    datos_json = []
-    if os.path.exists(JSON_FILE):
-        with open(JSON_FILE, "r", encoding="utf-8") as f:
-            try:
-                datos_json = json.load(f)
-            except:
-                datos_json = []
-    datos_json.append({"nombre": nombre, "edad": edad})
-    with open(JSON_FILE, "w", encoding="utf-8") as f:
-        json.dump(datos_json, f, indent=4)
-
-    # Guardar en CSV
-    escribir_header = not os.path.exists(CSV_FILE)
-    with open(CSV_FILE, "a", newline="", encoding="utf-8") as f:
-        writer = csv.writer(f)
-        if escribir_header:
-            writer.writerow(["nombre", "edad"])
-        writer.writerow([nombre, edad])
-
-    return render_template('resultado.html', nombre=nombre, edad=edad)
-
-# Ver datos
-@app.route('/ver/txt')
-def ver_txt():
-    with open(TXT_FILE, "r", encoding="utf-8") as f:
-        datos = f.readlines()
-    return "<br>".join(datos)
-
-@app.route('/ver/json')
-def ver_json():
-    with open(JSON_FILE, "r", encoding="utf-8") as f:
-        datos = json.load(f)
-    return {"usuarios": datos}
-
-@app.route('/ver/csv')
-def ver_csv():
-    with open(CSV_FILE, "r", encoding="utf-8") as f:
-        reader = csv.reader(f)
-        datos = list(reader)
-    return {"usuarios": datos}
-
-# PERSISTENCIA CON SQLITE
-
+# Configuración de SQLite con ruta segura
 basedir = os.path.abspath(os.path.dirname(__file__))
-db_path = os.path.join(basedir, "database", "usuarios.db")
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + db_path
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+db_path = os.path.join(basedir, 'database', 'heladeria.bd')
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
+# Modelo para usuarios/clientes
 class Usuario(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(100))
-    edad = db.Column(db.Integer)
+    nombre = db.Column(db.String(100), nullable=False)
+    edad = db.Column(db.Integer, nullable=False)
+    email = db.Column(db.String(100), nullable=True)
 
 with app.app_context():
     db.create_all()
 
-@app.route('/guardar_db', methods=['POST'])
-def guardar_db():
-    nombre = request.form['nombre']
-    edad = int(request.form['edad'])
+# Ruta principal
+@app.route('/')
+def index():
+    return render_template('index.html')
 
-    usuario = Usuario(nombre=nombre, edad=edad)
-    db.session.add(usuario)
-    db.session.commit()
+# Mostrar productos
+@app.route('/productos')
+def productos():
+    productos_list = []
+    productos_file = os.path.join(basedir, 'datos', 'productos.csv')
+    if os.path.exists(productos_file):
+        with open(productos_file, newline='', encoding='utf-8') as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                productos_list.append(row)
+    return render_template('productos.html', productos=productos_list)
 
-    return f"Usuario {nombre} guardado en SQLite."
+# Agregar productos
+@app.route('/agregar_producto', methods=['GET', 'POST'])
+def agregar_producto():
+    if request.method == 'POST':
+        nombre = request.form.get('nombre')
+        precio = request.form.get('precio')
+        if nombre and precio:
+            productos_file = os.path.join(basedir, 'datos', 'productos.csv')
+            file_exists = os.path.exists(productos_file)
+            with open(productos_file, 'a', newline='', encoding='utf-8') as csvfile:
+                fieldnames = ['nombre', 'precio']
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                if not file_exists:
+                    writer.writeheader()
+                writer.writerow({'nombre': nombre, 'precio': precio})
+            return redirect(url_for('productos'))
+    return render_template('agregar_producto.html')
 
-@app.route('/ver/db')
-def ver_db():
-    usuarios = Usuario.query.all()
-    return {"usuarios": [{"id": u.id, "nombre": u.nombre, "edad": u.edad} for u in usuarios]}
+# Mostrar ventas
+@app.route('/ventas')
+def ventas():
+    ventas_list = []
+    ventas_file = os.path.join(basedir, 'datos', 'ventas.json')
+    if os.path.exists(ventas_file):
+        with open(ventas_file, 'r', encoding='utf-8') as f:
+            try:
+                ventas_list = json.load(f)
+            except json.JSONDecodeError:
+                ventas_list = []
+    return render_template('ventas.html', ventas=ventas_list)
 
-# EJECUTAR APP
+# Agregar ventas
+@app.route('/agregar_venta', methods=['GET', 'POST'])
+def agregar_venta():
+    ventas_file = os.path.join(basedir, 'datos', 'ventas.json')
+    if request.method == 'POST':
+        producto = request.form.get('producto')
+        cantidad = request.form.get('cantidad')
+        precio = request.form.get('precio')
+        if producto and cantidad and precio:
+            nueva_venta = {
+                'producto': producto,
+                'cantidad': int(cantidad),
+                'precio': float(precio)
+            }
+            ventas_list = []
+            if os.path.exists(ventas_file):
+                with open(ventas_file, 'r', encoding='utf-8') as f:
+                    try:
+                        ventas_list = json.load(f)
+                    except json.JSONDecodeError:
+                        ventas_list = []
+            ventas_list.append(nueva_venta)
+            with open(ventas_file, 'w', encoding='utf-8') as f:
+                json.dump(ventas_list, f, indent=4)
+            return redirect(url_for('ventas'))
+    return render_template('agregar_venta.html')
+
+# Formulario de usuarios/clientes
+@app.route('/formulario', methods=['GET', 'POST'])
+def formulario():
+    if request.method == 'POST':
+        nombre = request.form.get('nombre')
+        edad = request.form.get('edad')
+        email = request.form.get('email')
+        if nombre and edad:
+            nuevo_usuario = Usuario(nombre=nombre, edad=int(edad), email=email)
+            db.session.add(nuevo_usuario)
+            db.session.commit()
+            return redirect(url_for('resultado', nombre=nombre, edad=edad))
+    return render_template('formulario.html')
+
+# Resultado formulario
+@app.route('/resultado')
+def resultado():
+    nombre = request.args.get('nombre')
+    edad = request.args.get('edad')
+    return render_template('resultado.html', nombre=nombre, edad=edad)
+
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))  # Mantener para Render
+    port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port, debug=True)

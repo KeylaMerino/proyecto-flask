@@ -1,0 +1,15 @@
+<h1>Agregar venta</h1>
+<form method="POST">
+    <label>Producto:</label>
+    <input type="text" name="producto" required><br>
+
+    <label>Cantidad:</label>
+    <input type="number" name="cantidad" required><br>
+
+    <label>Precio:</label>
+    <input type="number" step="0.01" name="precio" required><br>
+
+    <button type="submit">Agregar</button>
+</form>
+
+<a href="{{ url_for('ventas') }}">Volver a ventas</a>

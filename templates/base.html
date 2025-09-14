@@ -3,31 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Mi Proyecto Flask{% endblock %}</title>
-    <!-- Enlazando CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <title>{% block title %}Heladería{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    
     <header>
-        <h1>Mi Proyecto Flask</h1>
+        <h1>Mi Heladería</h1>
         <nav>
             <a href="{{ url_for('index') }}">Inicio</a> |
-            <a href="{{ url_for('about') }}">Acerca de</a>
+            <a href="{{ url_for('productos') }}">Productos</a> |
+            <a href="{{ url_for('ventas') }}">Ventas</a> |
+            <a href="{{ url_for('formulario') }}">Registro Usuario</a>
         </nav>
     </header>
-
- 
     <main>
-        {% block content %}
-        
-        {% endblock %}
+        {% block content %}{% endblock %}
     </main>
-
-    
     <footer>
-        <p>&copy; 2025 Keyla Merino</p>
+        <p>&copy; 2025 Heladería</p>
     </footer>
 </body>
 </html>
-

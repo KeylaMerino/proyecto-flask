@@ -1,19 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}Formulario{% endblock %}
+{% block title %}Registro Usuario{% endblock %}
 
 {% block content %}
-<h2>Ingresar Datos</h2>
-<form action="{{ url_for('guardar') }}" method="post">
+<h2>Registrar Usuario</h2>
+<form method="post">
     Nombre: <input type="text" name="nombre" required><br>
     Edad: <input type="number" name="edad" required><br>
-    <button type="submit">Guardar</button>
-</form>
-
-<form action="{{ url_for('guardar_db') }}" method="post">
-    <h3>Guardar también en SQLite</h3>
-    Nombre: <input type="text" name="nombre" required><br>
-    Edad: <input type="number" name="edad" required><br>
-    <button type="submit">Guardar en DB</button>
+    Email: <input type="email" name="email"><br>
+    <button type="submit">Registrar</button>
 </form>
 {% endblock %}

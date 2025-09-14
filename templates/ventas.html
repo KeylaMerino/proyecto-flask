@@ -1,0 +1,13 @@
+<h1>Ventas</h1>
+
+<a href="{{ url_for('agregar_venta') }}">Agregar nueva venta</a>
+
+{% if ventas %}
+    <ul>
+        {% for venta in ventas %}
+            <li>{{ venta.producto }} - Cantidad: {{ venta.cantidad }} - Precio: {{ venta.precio }}</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No hay ventas registradas.</p>
+{% endif %}

@@ -3,8 +3,7 @@
 {% block title %}Resultado{% endblock %}
 
 {% block content %}
-<h2>Datos guardados correctamente</h2>
-<p>Nombre: {{ nombre }}</p>
-<p>Edad: {{ edad }}</p>
-<a href="{{ url_for('formulario') }}">Volver al formulario</a>
+<h2>Registro Completado</h2>
+<p>Usuario {{ nombre }} con edad {{ edad }} registrado correctamente.</p>
+<a href="{{ url_for('formulario') }}">Registrar otro usuario</a>
 {% endblock %}

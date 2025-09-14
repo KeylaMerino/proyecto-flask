@@ -1,0 +1,12 @@
+[
+    {
+        "producto": "helado de chocolate",
+        "cantidad": 5,
+        "precio": 1.25
+    },
+    {
+        "producto": "helado de vainilla",
+        "cantidad": 2,
+        "precio": 3.0
+    }
+]
