@@ -2,7 +2,6 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user, UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
-from time import time
 import csv
 import json
 import os
@@ -21,10 +20,6 @@ db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
-
-@app.context_processor
-def inject_css_version():
-    return dict(css_version=time())
 
 
 # Modelo de Usuario en MySQL
