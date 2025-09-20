@@ -1,6 +1,107 @@
-body { font-family: Arial, sans-serif; margin: 20px; }
-header { background-color: #ffcccb; padding: 10px; }
-nav a { margin: 0 10px; text-decoration: none; }
-table { border-collapse: collapse; width: 50%; margin-top: 10px; }
-table, th, td { border: 1px solid #000; padding: 5px; }
-form input, form select, form button { margin: 5px 0; }
+/* ===== Reset básico ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ===== Body ===== */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #fff8f0;
+    color: #333;
+    line-height: 1.6;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ===== Header ===== */
+header {
+    background-color: #ff6f61;
+    color: #fff;
+    padding: 15px 20px;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+/* ===== Navegación ===== */
+nav a {
+    color: #fff;
+    text-decoration: none;
+    margin: 0 10px;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+nav a:hover {
+    color: #ffd1c1;
+}
+
+nav span {
+    font-weight: bold;
+}
+
+/* ===== Main ===== */
+main {
+    flex: 1;
+    padding: 20px;
+}
+
+/* ===== Tablas ===== */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+table, th, td {
+    border: 1px solid #ccc;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    background-color: #ffb3a7;
+    color: #fff;
+}
+
+/* ===== Formularios ===== */
+form input, form select, form button {
+    display: block;
+    width: 100%;
+    padding: 8px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+form button {
+    background-color: #ff6f61;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+form button:hover {
+    background-color: #ff4a3d;
+}
+
+/* ===== Footer ===== */
+footer {
+    background-color: #ff6f61;
+    color: #fff;
+    text-align: center;
+    padding: 15px 0;
+}
+

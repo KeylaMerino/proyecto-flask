@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Heladería{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
     <header>
@@ -13,12 +13,22 @@
             <a href="{{ url_for('index') }}">Inicio</a> |
             <a href="{{ url_for('productos') }}">Productos</a> |
             <a href="{{ url_for('ventas') }}">Ventas</a> |
-            <a href="{{ url_for('formulario') }}">Registro Usuario</a>
+
+            {% if current_user.is_authenticated %}
+                <span>Bienvenido, {{ current_user.nombre }} |</span>
+                <a href="{{ url_for('dashboard') }}">Dashboard</a> |
+                <a href="{{ url_for('logout') }}">Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">Login</a> |
+                <a href="{{ url_for('register') }}">Register</a>
+            {% endif %}
         </nav>
     </header>
+
     <main>
         {% block content %}{% endblock %}
     </main>
+
     <footer>
         <p>&copy; 2025 Heladería</p>
     </footer>
