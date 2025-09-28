@@ -1,13 +1,35 @@
-<h1>Ventas</h1>
+{% extends "base.html" %}
 
-<a href="{{ url_for('agregar_venta') }}">Agregar nueva venta</a>
+{% block title %}Ventas{% endblock %}
 
-{% if ventas %}
-    <ul>
-        {% for venta in ventas %}
-            <li>{{ venta.producto }} - Cantidad: {{ venta.cantidad }} - Precio: {{ venta.precio }}</li>
-        {% endfor %}
-    </ul>
-{% else %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Ventas</h2>
+    <a href="{{ url_for('agregar_venta') }}" class="btn btn-primary mb-3">Agregar Venta</a>
+
+    {% if ventas %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for v in ventas %}
+            <tr>
+                <td>{{ v['producto'] }}</td>
+                <td>{{ v['cantidad'] }}</td>
+                <td>${{ "%.2f"|format(v['precio']) }}</td>
+                <td>${{ "%.2f"|format(v['cantidad'] * v['precio']) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
     <p>No hay ventas registradas.</p>
-{% endif %}
+    {% endif %}
+</div>
+{% endblock %}

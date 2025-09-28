@@ -13,5 +13,10 @@
         "producto": "helado de queso",
         "cantidad": 1,
         "precio": 3.5
+    },
+    {
+        "producto": "helado oreo",
+        "cantidad": 2,
+        "precio": 1.25
     }
 ]

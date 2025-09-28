@@ -3,18 +3,34 @@
 {% block title %}Productos{% endblock %}
 
 {% block content %}
-<h2>Productos</h2>
-<a href="{{ url_for('agregar_producto') }}">Agregar producto</a>
-<table border="1">
-    <tr>
-        <th>Nombre</th>
-        <th>Precio</th>
-    </tr>
-    {% for producto in productos %}
-    <tr>
-        <td>{{ producto['nombre'] }}</td>
-        <td>{{ producto['precio'] }}</td>
-    </tr>
-    {% endfor %}
+<h2 class="mb-4">Productos</h2>
+<a href="{{ url_for('crear_producto') }}" class="btn btn-success mb-3">Agregar Producto</a>
+
+<table class="table table-striped">
+    <thead class="table-primary">
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Precio</th>
+            <th>Stock</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for producto in productos %}
+        <tr>
+            <td>{{ producto.id_producto }}</td>
+            <td>{{ producto.nombre }}</td>
+            <td>${{ producto.precio }}</td>
+            <td>{{ producto.stock }}</td>
+            <td>
+                <a href="{{ url_for('editar_producto', id=producto.id_producto) }}" class="btn btn-warning btn-sm">Editar</a>
+                <form action="{{ url_for('eliminar_producto', id=producto.id_producto) }}" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de eliminar este producto?');">Eliminar</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
 </table>
 {% endblock %}
