@@ -18,5 +18,15 @@
         "producto": "helado oreo",
         "cantidad": 2,
         "precio": 1.25
+    },
+    {
+        "producto": "Torta 3 leches",
+        "cantidad": 2,
+        "precio": 2.5
+    },
+    {
+        "producto": "jugo de fresa",
+        "cantidad": 3,
+        "precio": 1.5
     }
 ]

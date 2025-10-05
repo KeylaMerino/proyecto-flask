@@ -31,12 +31,19 @@ class Usuario(db.Model, UserMixin):
     def get_id(self):
         return str(self.id_usuario)
 
+class Categoria(db.Model):
+    __tablename__ = 'categorias'
+    id_categoria = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    nombre = db.Column(db.String(100), nullable=False)
+
 class Producto(db.Model):
     __tablename__ = 'productos'
     id_producto = db.Column(db.Integer, primary_key=True, autoincrement=True)
     nombre = db.Column(db.String(100), nullable=False)
     precio = db.Column(db.Numeric(10,2), nullable=False)
     stock = db.Column(db.Integer, nullable=False)
+    id_categoria = db.Column(db.Integer, db.ForeignKey('categorias.id_categoria'))
+    categoria = db.relationship('Categoria', backref='productos')
 
 # -------------------- LOGIN MANAGER --------------------
 @login_manager.user_loader
@@ -62,30 +69,39 @@ def productos():
 @app.route('/crear_producto', methods=['GET', 'POST'])
 @login_required
 def crear_producto():
+    categorias = Categoria.query.all()
     if request.method == 'POST':
         nombre = request.form['nombre']
         precio = request.form['precio']
         stock = request.form['stock']
-        if nombre and precio and stock:
-            nuevo = Producto(nombre=nombre, precio=precio, stock=stock)
+        id_categoria = request.form['id_categoria']
+        if nombre and precio and stock and id_categoria:
+            nuevo = Producto(
+                nombre=nombre,
+                precio=precio,
+                stock=stock,
+                id_categoria=int(id_categoria)
+            )
             db.session.add(nuevo)
             db.session.commit()
             flash("Producto agregado exitosamente", "success")
             return redirect(url_for('productos'))
-    return render_template('agregar_producto.html')
+    return render_template('agregar_producto.html', categorias=categorias)
 
 @app.route('/editar_producto/<int:id>', methods=['GET', 'POST'])
 @login_required
 def editar_producto(id):
     producto = Producto.query.get_or_404(id)
+    categorias = Categoria.query.all()
     if request.method == 'POST':
         producto.nombre = request.form['nombre']
         producto.precio = request.form['precio']
         producto.stock = request.form['stock']
+        producto.id_categoria = int(request.form['id_categoria'])
         db.session.commit()
         flash("Producto actualizado correctamente", "success")
         return redirect(url_for('productos'))
-    return render_template('editar_producto.html', producto=producto)
+    return render_template('editar_producto.html', producto=producto, categorias=categorias)
 
 @app.route('/eliminar_producto/<int:id>', methods=['POST'])
 @login_required
@@ -95,6 +111,46 @@ def eliminar_producto(id):
     db.session.commit()
     flash("Producto eliminado", "success")
     return redirect(url_for('productos'))
+
+# -------- CRUD CATEGORÍAS --------
+@app.route('/categorias')
+@login_required
+def categorias():
+    categorias = Categoria.query.all()
+    return render_template('categorias.html', categorias=categorias)
+
+@app.route('/crear_categoria', methods=['GET', 'POST'])
+@login_required
+def crear_categoria():
+    if request.method == 'POST':
+        nombre = request.form['nombre']
+        if nombre:
+            nueva = Categoria(nombre=nombre)
+            db.session.add(nueva)
+            db.session.commit()
+            flash("Categoría agregada exitosamente", "success")
+            return redirect(url_for('categorias'))
+    return render_template('agregar_categoria.html')
+
+@app.route('/editar_categoria/<int:id>', methods=['GET', 'POST'])
+@login_required
+def editar_categoria(id):
+    categoria = Categoria.query.get_or_404(id)
+    if request.method == 'POST':
+        categoria.nombre = request.form['nombre']
+        db.session.commit()
+        flash("Categoría actualizada correctamente", "success")
+        return redirect(url_for('categorias'))
+    return render_template('editar_categoria.html', categoria=categoria)
+
+@app.route('/eliminar_categoria/<int:id>', methods=['POST'])
+@login_required
+def eliminar_categoria(id):
+    categoria = Categoria.query.get_or_404(id)
+    db.session.delete(categoria)
+    db.session.commit()
+    flash("Categoría eliminada", "success")
+    return redirect(url_for('categorias'))
 
 # -------- VENTAS (JSON) --------
 @app.route('/ventas')
@@ -169,7 +225,7 @@ def login():
         if usuario and check_password_hash(usuario.password, password):
             login_user(usuario)
             flash("Login exitoso", "success")
-            return redirect(url_for('dashboard'))  # <--- Aquí usamos dashboard
+            return redirect(url_for('dashboard'))
         else:
             flash("Correo o contraseña incorrectos", "danger")
     return render_template('login.html')
@@ -191,4 +247,3 @@ def dashboard():
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port, debug=True)
-

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}Editar Categoría{% endblock %}
+
+{% block content %}
+<h2>Editar Categoría</h2>
+<form action="{{ url_for('editar_categoria', id=categoria.id_categoria) }}" method="POST" class="mt-3">
+    <div class="mb-3">
+        <label for="nombre" class="form-label">Nombre de la categoría</label>
+        <input type="text" id="nombre" name="nombre" class="form-control" value="{{ categoria.nombre }}" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Actualizar Categoría</button>
+    <a href="{{ url_for('categorias') }}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}
